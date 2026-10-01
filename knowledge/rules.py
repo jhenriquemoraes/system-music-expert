@@ -155,6 +155,7 @@ def r07_condition(facts: Facts) -> bool:
         facts.intention == "energetic"
         and facts.accepts_modal
         and facts.base_character == "major"
+        and facts.context is None
     )
 
 
@@ -181,6 +182,7 @@ def r08_condition(facts: Facts) -> bool:
         facts.intention == "contemplative"
         and facts.accepts_modal
         and facts.base_character == "major"
+        and facts.context is None
     )
 
 

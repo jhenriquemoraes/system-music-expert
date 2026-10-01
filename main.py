@@ -1,60 +1,146 @@
-from models.facts import Facts
-from knowledge.rules import RULES
-from knowledge.progressions import PROGRESSIONS
-from engine.inference_engine import InferenceEngine
+from engine.music_expert_service import MusicExpertService
+
+
+NOTES = [
+    "C", "C#", "D", "D#", "E", "F",
+    "F#", "G", "G#", "A", "A#", "B"
+]
+
+INTENTIONS = {
+    "1": ("Alegre e leve", "happy"),
+    "2": ("Melancólica e emocional", "melancholic"),
+    "3": ("Tensa, buscando resolução", "tension"),
+    "4": ("Energética e aberta", "energetic"),
+    "5": ("Contemplativa e aberta", "contemplative"),
+}
+
+BASE_CHARACTERS = {
+    "1": ("Claro / aberto", "major"),
+    "2": ("Introspectivo / escuro", "minor"),
+    "3": ("Não sei", "unknown"),
+}
+
+LEVELS = {
+    "1": ("Simples, com poucos acordes", "beginner"),
+    "2": ("Um pouco mais elaborado", "intermediate"),
+}
+
+SONORITIES = {
+    "1": ("Mais familiar", False),
+    "2": ("Pode ser um pouco diferente", True),
+}
+
+
+def choose_option(title, options):
+    print(f"\n{title}")
+
+    for key, value in options.items():
+        print(f"{key} - {value[0]}")
+
+    while True:
+        choice = input("\nEscolha uma opção: ").strip()
+
+        if choice in options:
+            return options[choice][1]
+
+        print("Opção inválida. Tente novamente.")
+
+
+def choose_note():
+    print("\nQual nota você gostaria de usar como ponto de partida?")
+
+    for index, note in enumerate(NOTES, start=1):
+        print(f"{index} - {note}")
+
+    while True:
+        choice = input("\nEscolha uma nota: ").strip()
+
+        if choice.isdigit():
+            index = int(choice) - 1
+
+            if 0 <= index < len(NOTES):
+                return NOTES[index]
+
+        print("Opção inválida. Tente novamente.")
+
+
+def show_result(result):
+    print("\n" + "=" * 50)
+    print("RECOMENDAÇÃO")
+    print("=" * 50)
+
+    if result.progression_id is None:
+        print(result.message)
+        return
+
+    print(f"\nContexto harmônico: {result.context}")
+
+    print(
+        "Progressão: "
+        + " - ".join(result.degrees)
+    )
+
+    print(
+        "Acordes sugeridos: "
+        + " - ".join(result.chords)
+    )
+
+    if result.message:
+        print(f"\n{result.message}")
 
 
 def main():
+    print("=" * 50)
+    print("ASSISTENTE DE COMPOSIÇÃO MUSICAL")
+    print("=" * 50)
 
-    facts = Facts(
-        note="C",
-        base_character="major",
-        intention="melancholic",
-        level="beginner",
-        accepts_modal=False,
-        wants_resolution=False
+    print(
+        "\nResponda algumas perguntas sobre a música que "
+        "você deseja criar."
     )
 
-    engine = InferenceEngine(RULES)
+    note = choose_note()
 
-    result = engine.run(facts)
+    intention = choose_option(
+        "Qual sensação você quer transmitir?",
+        INTENTIONS
+    )
 
-    print("\n=== SISTEMA ESPECIALISTA MUSICAL ===")
+    base_character = choose_option(
+        "Qual caráter você prefere para a música?",
+        BASE_CHARACTERS
+    )
 
-    print(f"\nNota de referência: {result.note}")
-    print(f"Contexto: {result.context}")
-    print(f"Intenção: {result.intention}")
-    print(f"Nível: {result.level}")
+    accepts_modal = choose_option(
+        "Que tipo de sonoridade você prefere?",
+        SONORITIES
+    )
 
-    print("\nFunções inferidas:")
+    level = choose_option(
+        "Qual nível de complexidade você prefere?",
+        LEVELS
+    )
 
-    for function in sorted(result.desired_functions):
-        print(f"- {function}")
+    wants_resolution = intention == "tension"
 
-    print("\nProgressões candidatas:")
+    service = MusicExpertService()
 
-    for progression_id in sorted(result.candidate_progressions):
+    result = service.recommend(
+        note=note,
+        base_character=base_character,
+        intention=intention,
+        level=level,
+        accepts_modal=accepts_modal,
+        wants_resolution=wants_resolution
+    )
 
-        progression = PROGRESSIONS[progression_id]
+    show_result(result)
+    if result.explanation:
+        print("\nPor que esta sugestão?")
+        print(result.explanation)
 
-        degrees = " - ".join(progression.degrees)
-
-        print(f"- {progression.id}: {degrees}")
-
-    print("\nProgressão selecionada:")
-
-    for progression_id in result.selected_progressions:
-
-        progression = PROGRESSIONS[progression_id]
-
-        degrees = " - ".join(progression.degrees)
-
-        print(f"{progression.id}: {degrees}")
-
-    print("\nRegras disparadas:")
-
-    for rule_id in result.fired_rules:
-        print(f"- {rule_id}")
+    if result.message:
+        print(f"\n{result.message}")
 
 
 if __name__ == "__main__":

@@ -53,6 +53,48 @@ CHORD_QUALITIES = {
     ]
 }
 
+SEVENTH_CHORD_QUALITIES = {
+    "major": [
+        "major7",
+        "minor7",
+        "minor7",
+        "major7",
+        "dominant7",
+        "minor7",
+        "half_diminished7"
+    ],
+
+    "minor": [
+        "minor7",
+        "half_diminished7",
+        "major7",
+        "minor7",
+        "minor7",
+        "major7",
+        "dominant7"
+    ],
+
+    "mixolydian": [
+        "dominant7",
+        "minor7",
+        "half_diminished7",
+        "major7",
+        "minor7",
+        "minor7",
+        "major7"
+    ],
+
+    "lydian": [
+        "major7",
+        "dominant7",
+        "minor7",
+        "half_diminished7",
+        "major7",
+        "minor7",
+        "minor7"
+    ],
+}
+
 SCALES = {
     "major": MAJOR_SCALE,
     "minor": NATURAL_MINOR_SCALE,
@@ -75,7 +117,6 @@ def build_scale(root: str, context: str) -> list[str]:
     return scale
 
 def build_chord(note: str, quality: str) -> str:
-
     if quality == "major":
         return note
 
@@ -85,7 +126,36 @@ def build_chord(note: str, quality: str) -> str:
     if quality == "diminished":
         return f"{note}dim"
 
-    raise ValueError(f"Qualidade de acorde inválida: {quality}")
+    if quality == "major7":
+        return f"{note}maj7"
+
+    if quality == "minor7":
+        return f"{note}m7"
+
+    if quality == "dominant7":
+        return f"{note}7"
+
+    if quality == "half_diminished7":
+        return f"{note}m7b5"
+
+    raise ValueError(f"Qualidade de acorde desconhecida: {quality}")
+
+def build_seventh_harmonic_field(
+    root: str,
+    context: str
+) -> list[str]:
+
+    scale = build_scale(root, context)
+    qualities = SEVENTH_CHORD_QUALITIES[context]
+
+    harmonic_field = []
+
+    for note, quality in zip(scale, qualities):
+        harmonic_field.append(
+            build_chord(note, quality)
+        )
+
+    return harmonic_field
 
 def build_harmonic_field(root: str, context: str) -> list[str]:
 

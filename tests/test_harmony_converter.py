@@ -90,3 +90,43 @@ def test_p8_c_lydian():
         "C",
         "D"
     ]
+
+def test_p1_c_major_intermediate():
+    assert convert_progression(
+        "C",
+        "major",
+        "P1",
+        level="intermediate"
+    ) == [
+        "Cmaj7",
+        "G7",
+        "Am7",
+        "Fmaj7"
+    ]
+
+
+def test_p4_c_major_intermediate():
+    assert convert_progression(
+        "C",
+        "major",
+        "P4",
+        level="intermediate"
+    ) == [
+        "Dm7",
+        "G7",
+        "Cmaj7"
+    ]
+
+
+def test_p7_a_minor_intermediate_with_major_dominant():
+    assert convert_progression(
+        "A",
+        "minor",
+        "P7",
+        level="intermediate"
+    ) == [
+        "Am7",
+        "Dm7",
+        "E7",
+        "Am7"
+    ]

@@ -1,5 +1,5 @@
 from knowledge.harmony import build_scale
-from knowledge.harmony import build_scale, build_harmonic_field
+from knowledge.harmony import build_scale, build_harmonic_field, build_seventh_harmonic_field
 
 def test_c_major_scale():
 
@@ -62,4 +62,32 @@ def test_a_minor_harmonic_field():
         "Em",
         "F",
         "G"
+    ]
+    
+
+def test_c_major_seventh_harmonic_field():
+    field = build_seventh_harmonic_field("C", "major")
+
+    assert field == [
+        "Cmaj7",
+        "Dm7",
+        "Em7",
+        "Fmaj7",
+        "G7",
+        "Am7",
+        "Bm7b5"
+    ]
+
+
+def test_a_minor_seventh_harmonic_field():
+    field = build_seventh_harmonic_field("A", "minor")
+
+    assert field == [
+        "Am7",
+        "Bm7b5",
+        "Cmaj7",
+        "Dm7",
+        "Em7",
+        "Fmaj7",
+        "G7"
     ]

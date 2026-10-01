@@ -1,4 +1,4 @@
-from knowledge.harmony import build_harmonic_field
+from knowledge.harmony import build_harmonic_field, build_seventh_harmonic_field
 from knowledge.progressions import PROGRESSIONS
 
 
@@ -32,29 +32,41 @@ DEGREE_INDEXES = {
 def convert_progression(
     root: str,
     context: str,
-    progression_id: str
+    progression_id: str,
+    level: str = "beginner"
 ) -> list[str]:
 
     progression = PROGRESSIONS[progression_id]
 
-    harmonic_field = build_harmonic_field(root, context)
+    if level == "intermediate":
+        harmonic_field = build_seventh_harmonic_field(
+            root,
+            context
+        )
+    else:
+        harmonic_field = build_harmonic_field(
+            root,
+            context
+        )
 
     chords = []
 
     for degree in progression.degrees:
-
         degree_index = DEGREE_INDEXES[degree]
-
         chord = harmonic_field[degree_index]
 
-        # P7 utiliza V maior no contexto menor.
+        # P7 utiliza dominante maior no contexto menor.
         if (
             progression_id == "P7"
             and degree == "V"
             and context == "minor"
         ):
-            note = chord.removesuffix("m")
-            chord = note
+            if level == "intermediate":
+                note = chord.removesuffix("m7")
+                chord = f"{note}7"
+            else:
+                note = chord.removesuffix("m")
+                chord = note
 
         chords.append(chord)
 
